@@ -7,6 +7,8 @@ import android.graphics.Rect;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
 
+import androidx.annotation.NonNull;
+
 /**
  * ClassName:加载图像类
  *
@@ -20,17 +22,17 @@ public class LoadingDrawable extends Drawable implements Animatable {
 
     private final Callback mCallback = new Callback() {
         @Override
-        public void invalidateDrawable(Drawable d) {
+        public void invalidateDrawable(@NonNull Drawable d) {
             invalidateSelf();
         }
 
         @Override
-        public void scheduleDrawable(Drawable d, Runnable what, long when) {
+        public void scheduleDrawable(@NonNull Drawable d, @NonNull Runnable what, long when) {
             scheduleSelf(what, when);
         }
 
         @Override
-        public void unscheduleDrawable(Drawable d, Runnable what) {
+        public void unscheduleDrawable(@NonNull Drawable d, @NonNull Runnable what) {
             unscheduleSelf(what);
         }
     };
@@ -41,13 +43,13 @@ public class LoadingDrawable extends Drawable implements Animatable {
     }
 
     @Override
-    protected void onBoundsChange(Rect bounds) {
+    protected void onBoundsChange(@NonNull Rect bounds) {
         super.onBoundsChange(bounds);
         this.mLoadingRender.setBounds(bounds);
     }
 
     @Override
-    public void draw(Canvas canvas) {
+    public void draw(@NonNull Canvas canvas) {
         if (!getBounds().isEmpty()) {
             this.mLoadingRender.draw(canvas);
         }

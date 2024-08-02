@@ -8,7 +8,6 @@ import android.graphics.ColorFilter;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
-import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 
 /**
@@ -97,16 +96,16 @@ abstract public class LoadingRenderer {
     }
 
     private void initParams(Context context) {
-        this.mWidth = this.DEFAULT_SIZE;
-        this.mHeight = this.DEFAULT_SIZE;
+        this.mWidth = DEFAULT_SIZE;
+        this.mHeight = DEFAULT_SIZE;
 
-        this.mDuration = this.ANIMATION_DURATION;
+        this.mDuration = ANIMATION_DURATION;
     }
 
     private void setupAnimators() {
         this.mRenderAnimator = ValueAnimator.ofFloat(0.0f, 1.0f);
-        this.mRenderAnimator.setRepeatCount(Animation.INFINITE);
-        this.mRenderAnimator.setRepeatMode(Animation.RESTART);
+        this.mRenderAnimator.setRepeatCount(ValueAnimator.INFINITE);
+        this.mRenderAnimator.setRepeatMode(ValueAnimator.REVERSE);
         this.mRenderAnimator.setDuration(this.mDuration);
 
         this.mRenderAnimator.setInterpolator(new LinearInterpolator());

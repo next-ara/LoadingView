@@ -55,14 +55,14 @@ public class LevelLoadingRenderer extends LoadingRenderer {
             super.onAnimationRepeat(animator);
             storeOriginals();
 
-            mStartDegrees = mEndDegrees;
-            mRotationCount = (mRotationCount + 1) % (NUM_POINTS);
+            LevelLoadingRenderer.this.mStartDegrees = LevelLoadingRenderer.this.mEndDegrees;
+            LevelLoadingRenderer.this.mRotationCount = (LevelLoadingRenderer.this.mRotationCount + 1) % (NUM_POINTS);
         }
 
         @Override
         public void onAnimationStart(Animator animation) {
             super.onAnimationStart(animation);
-            mRotationCount = 0;
+            LevelLoadingRenderer.this.mRotationCount = 0;
         }
     };
 
@@ -92,18 +92,16 @@ public class LevelLoadingRenderer extends LoadingRenderer {
     }
 
     private void init(Context context, AttributeSet attrs) {
-        this.mStrokeWidth = this.DEFAULT_STROKE_WIDTH;
-        this.mCenterRadius = this.DEFAULT_CENTER_RADIUS;
+        this.mCenterRadius = DEFAULT_CENTER_RADIUS;
 
         this.mLevelSwipeDegrees = new float[3];
 
-        TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.LoadingStyle);
-        int color0 = typedArray.getColor(R.styleable.LoadingStyle_loading_color_0, Color.BLACK);
-        int color1 = typedArray.getColor(R.styleable.LoadingStyle_loading_color_1, Color.BLACK);
-        int color2 = typedArray.getColor(R.styleable.LoadingStyle_loading_color_2, Color.BLACK);
+        TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.LoadingView);
+        int levelColor = typedArray.getColor(R.styleable.LoadingView_loadingColor, Color.BLACK);
+        this.mStrokeWidth = typedArray.getDimension(R.styleable.LoadingView_loadingStrokeWidth, DEFAULT_STROKE_WIDTH);
         typedArray.recycle();
 
-        this.mLevelColors = new int[]{color0, color1, color2};
+        this.mLevelColors = new int[]{levelColor, levelColor, levelColor};
     }
 
     private void setupPaint() {
@@ -135,36 +133,36 @@ public class LevelLoadingRenderer extends LoadingRenderer {
 
     @Override
     protected void computeRender(float renderProgress) {
-        if (renderProgress <= this.START_TRIM_DURATION_OFFSET) {
-            float startTrimProgress = (renderProgress) / this.START_TRIM_DURATION_OFFSET;
-            this.mStartDegrees = this.mOriginStartDegrees + this.MAX_SWIPE_DEGREES * this.MATERIAL_INTERPOLATOR.getInterpolation(startTrimProgress);
+        if (renderProgress <= START_TRIM_DURATION_OFFSET) {
+            float startTrimProgress = (renderProgress) / START_TRIM_DURATION_OFFSET;
+            this.mStartDegrees = this.mOriginStartDegrees + MAX_SWIPE_DEGREES * MATERIAL_INTERPOLATOR.getInterpolation(startTrimProgress);
 
             float mSwipeDegrees = this.mEndDegrees - this.mStartDegrees;
-            float levelSwipeDegreesProgress = Math.abs(mSwipeDegrees) / this.MAX_SWIPE_DEGREES;
+            float levelSwipeDegreesProgress = Math.abs(mSwipeDegrees) / MAX_SWIPE_DEGREES;
 
-            float level1Increment = this.DECELERATE_INTERPOLATOR.getInterpolation(levelSwipeDegreesProgress) - this.LINEAR_INTERPOLATOR.getInterpolation(levelSwipeDegreesProgress);
-            float level3Increment = this.ACCELERATE_INTERPOLATOR.getInterpolation(levelSwipeDegreesProgress) - this.LINEAR_INTERPOLATOR.getInterpolation(levelSwipeDegreesProgress);
+            float level1Increment = DECELERATE_INTERPOLATOR.getInterpolation(levelSwipeDegreesProgress) - LINEAR_INTERPOLATOR.getInterpolation(levelSwipeDegreesProgress);
+            float level3Increment = ACCELERATE_INTERPOLATOR.getInterpolation(levelSwipeDegreesProgress) - LINEAR_INTERPOLATOR.getInterpolation(levelSwipeDegreesProgress);
 
-            this.mLevelSwipeDegrees[0] = -mSwipeDegrees * this.LEVEL_SWEEP_ANGLE_OFFSETS[0] * (1.0f + level1Increment);
-            this.mLevelSwipeDegrees[1] = -mSwipeDegrees * this.LEVEL_SWEEP_ANGLE_OFFSETS[1] * 1.0f;
-            this.mLevelSwipeDegrees[2] = -mSwipeDegrees * this.LEVEL_SWEEP_ANGLE_OFFSETS[2] * (1.0f + level3Increment);
+            this.mLevelSwipeDegrees[0] = -mSwipeDegrees * LEVEL_SWEEP_ANGLE_OFFSETS[0] * (1.0f + level1Increment);
+            this.mLevelSwipeDegrees[1] = -mSwipeDegrees * LEVEL_SWEEP_ANGLE_OFFSETS[1] * 1.0f;
+            this.mLevelSwipeDegrees[2] = -mSwipeDegrees * LEVEL_SWEEP_ANGLE_OFFSETS[2] * (1.0f + level3Increment);
         }
 
-        if (renderProgress > this.START_TRIM_DURATION_OFFSET) {
-            float endTrimProgress = (renderProgress - this.START_TRIM_DURATION_OFFSET) / (this.END_TRIM_DURATION_OFFSET - this.START_TRIM_DURATION_OFFSET);
-            this.mEndDegrees = this.mOriginEndDegrees + this.MAX_SWIPE_DEGREES * this.MATERIAL_INTERPOLATOR.getInterpolation(endTrimProgress);
+        if (renderProgress > START_TRIM_DURATION_OFFSET) {
+            float endTrimProgress = (renderProgress - START_TRIM_DURATION_OFFSET) / (END_TRIM_DURATION_OFFSET - START_TRIM_DURATION_OFFSET);
+            this.mEndDegrees = this.mOriginEndDegrees + MAX_SWIPE_DEGREES * MATERIAL_INTERPOLATOR.getInterpolation(endTrimProgress);
 
             float mSwipeDegrees = this.mEndDegrees - this.mStartDegrees;
-            float levelSwipeDegreesProgress = Math.abs(mSwipeDegrees) / this.MAX_SWIPE_DEGREES;
+            float levelSwipeDegreesProgress = Math.abs(mSwipeDegrees) / MAX_SWIPE_DEGREES;
 
-            if (levelSwipeDegreesProgress > this.LEVEL_SWEEP_ANGLE_OFFSETS[1]) {
+            if (levelSwipeDegreesProgress > LEVEL_SWEEP_ANGLE_OFFSETS[1]) {
                 this.mLevelSwipeDegrees[0] = -mSwipeDegrees;
-                this.mLevelSwipeDegrees[1] = this.MAX_SWIPE_DEGREES * this.LEVEL_SWEEP_ANGLE_OFFSETS[1];
-                this.mLevelSwipeDegrees[2] = this.MAX_SWIPE_DEGREES * this.LEVEL_SWEEP_ANGLE_OFFSETS[2];
-            } else if (levelSwipeDegreesProgress > this.LEVEL_SWEEP_ANGLE_OFFSETS[2]) {
+                this.mLevelSwipeDegrees[1] = MAX_SWIPE_DEGREES * LEVEL_SWEEP_ANGLE_OFFSETS[1];
+                this.mLevelSwipeDegrees[2] = MAX_SWIPE_DEGREES * LEVEL_SWEEP_ANGLE_OFFSETS[2];
+            } else if (levelSwipeDegreesProgress > LEVEL_SWEEP_ANGLE_OFFSETS[2]) {
                 this.mLevelSwipeDegrees[0] = 0;
                 this.mLevelSwipeDegrees[1] = -mSwipeDegrees;
-                this.mLevelSwipeDegrees[2] = this.MAX_SWIPE_DEGREES * this.LEVEL_SWEEP_ANGLE_OFFSETS[2];
+                this.mLevelSwipeDegrees[2] = MAX_SWIPE_DEGREES * LEVEL_SWEEP_ANGLE_OFFSETS[2];
             } else {
                 this.mLevelSwipeDegrees[0] = 0;
                 this.mLevelSwipeDegrees[1] = 0;
@@ -172,7 +170,7 @@ public class LevelLoadingRenderer extends LoadingRenderer {
             }
         }
 
-        this.mGroupRotation = ((this.FULL_GROUP_ROTATION / this.NUM_POINTS) * renderProgress) + (this.FULL_GROUP_ROTATION * (this.mRotationCount / this.NUM_POINTS));
+        this.mGroupRotation = ((FULL_GROUP_ROTATION / NUM_POINTS) * renderProgress) + (FULL_GROUP_ROTATION * (this.mRotationCount / NUM_POINTS));
     }
 
     @Override
@@ -194,7 +192,7 @@ public class LevelLoadingRenderer extends LoadingRenderer {
         float minSize = Math.min(width, height);
         float strokeInset = minSize / 2.0f - this.mCenterRadius;
         float minStrokeInset = (float) Math.ceil(this.mStrokeWidth / 2.0f);
-        this.mStrokeInset = strokeInset < minStrokeInset ? minStrokeInset : strokeInset;
+        this.mStrokeInset = Math.max(strokeInset, minStrokeInset);
     }
 
     private void storeOriginals() {

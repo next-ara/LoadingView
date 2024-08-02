@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <declare-styleable name="LoadingStyle">
-        <attr name="loading_color_0" format="color" />
-        <attr name="loading_color_1" format="color" />
-        <attr name="loading_color_2" format="color" />
+    <declare-styleable name="LoadingView">
+        <!-- 加载条颜色 -->
+        <attr name="loadingColor" format="color" />
+        <!-- 加载条宽度 -->
+        <attr name="loadingStrokeWidth" format="dimension" />
     </declare-styleable>
 </resources>

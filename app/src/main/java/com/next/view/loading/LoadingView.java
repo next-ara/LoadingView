@@ -54,7 +54,7 @@ public class LoadingView extends androidx.appcompat.widget.AppCompatImageView {
     protected void onVisibilityChanged(View changedView, int visibility) {
         super.onVisibilityChanged(changedView, visibility);
 
-        final boolean visible = visibility == this.VISIBLE && this.getVisibility() == this.VISIBLE;
+        final boolean visible = visibility == VISIBLE && this.getVisibility() == VISIBLE;
         if (visible) {
             this.startAnimation();
         } else {
