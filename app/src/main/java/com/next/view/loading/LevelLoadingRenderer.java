@@ -71,8 +71,6 @@ public class LevelLoadingRenderer extends LoadingRenderer {
     @Size(3)
     private float[] mLevelSwipeDegrees;
 
-    private float mStrokeInset;
-
     private float mRotationCount;
     private float mGroupRotation;
 
@@ -109,8 +107,6 @@ public class LevelLoadingRenderer extends LoadingRenderer {
         this.mPaint.setStrokeWidth(this.mStrokeWidth);
         this.mPaint.setStyle(Paint.Style.STROKE);
         this.mPaint.setStrokeCap(Paint.Cap.ROUND);
-
-        this.initStrokeInset((int) this.mWidth, (int) this.mHeight);
     }
 
     @Override
@@ -118,7 +114,6 @@ public class LevelLoadingRenderer extends LoadingRenderer {
         int saveCount = canvas.save();
 
         this.mTempBounds.set(this.mBounds);
-        this.mTempBounds.inset(this.mStrokeInset, this.mStrokeInset);
         canvas.rotate(this.mGroupRotation, this.mTempBounds.centerX(), this.mTempBounds.centerY());
 
         for (int i = 0; i < 3; i++) {
@@ -188,13 +183,6 @@ public class LevelLoadingRenderer extends LoadingRenderer {
         this.resetOriginals();
     }
 
-    private void initStrokeInset(float width, float height) {
-        float minSize = Math.min(width, height);
-        float strokeInset = minSize / 2.0f - this.mCenterRadius;
-        float minStrokeInset = (float) Math.ceil(this.mStrokeWidth / 2.0f);
-        this.mStrokeInset = Math.max(strokeInset, minStrokeInset);
-    }
-
     private void storeOriginals() {
         this.mOriginEndDegrees = this.mEndDegrees;
         this.mOriginStartDegrees = this.mEndDegrees;
@@ -223,7 +211,6 @@ public class LevelLoadingRenderer extends LoadingRenderer {
         this.mLevelColors = builder.mLevelColors != null ? builder.mLevelColors : this.mLevelColors;
 
         this.setupPaint();
-        this.initStrokeInset(this.mWidth, this.mHeight);
     }
 
     public static class Builder {
