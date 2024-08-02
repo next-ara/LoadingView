@@ -114,6 +114,7 @@ public class LevelLoadingRenderer extends LoadingRenderer {
         int saveCount = canvas.save();
 
         this.mTempBounds.set(this.mBounds);
+        this.mTempBounds.inset(this.mStrokeWidth, this.mStrokeWidth);
         canvas.rotate(this.mGroupRotation, this.mTempBounds.centerX(), this.mTempBounds.centerY());
 
         for (int i = 0; i < 3; i++) {
