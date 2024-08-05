@@ -43,7 +43,6 @@ public class LevelLoadingRenderer extends LoadingRenderer {
     private static final float START_TRIM_DURATION_OFFSET = 0.5f;
     private static final float END_TRIM_DURATION_OFFSET = 1.0f;
 
-    private static final float DEFAULT_CENTER_RADIUS = 12.5f;
     private static final float DEFAULT_STROKE_WIDTH = 2.5f;
 
     private final Paint mPaint = new Paint();
@@ -80,8 +79,6 @@ public class LevelLoadingRenderer extends LoadingRenderer {
     private float mOriginStartDegrees;
 
     private float mStrokeWidth;
-    private float mStrokeInset;
-    private float mCenterRadius;
 
     public LevelLoadingRenderer(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -91,8 +88,6 @@ public class LevelLoadingRenderer extends LoadingRenderer {
     }
 
     private void init(Context context, AttributeSet attrs) {
-        this.mCenterRadius = DEFAULT_CENTER_RADIUS;
-
         this.mLevelSwipeDegrees = new float[3];
 
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.LoadingView);
@@ -108,8 +103,6 @@ public class LevelLoadingRenderer extends LoadingRenderer {
         this.mPaint.setStrokeWidth(this.mStrokeWidth);
         this.mPaint.setStyle(Paint.Style.STROKE);
         this.mPaint.setStrokeCap(Paint.Cap.ROUND);
-
-        this.initStrokeInset((int) this.mWidth, (int) this.mHeight);
     }
 
     @Override
@@ -117,7 +110,7 @@ public class LevelLoadingRenderer extends LoadingRenderer {
         int saveCount = canvas.save();
 
         this.mTempBounds.set(this.mBounds);
-        this.mTempBounds.inset(this.mStrokeInset, this.mStrokeInset);
+        this.mTempBounds.inset(this.mStrokeWidth * 2, this.mStrokeWidth * 2);
         canvas.rotate(this.mGroupRotation, this.mTempBounds.centerX(), this.mTempBounds.centerY());
 
         for (int i = 0; i < 3; i++) {
@@ -187,13 +180,6 @@ public class LevelLoadingRenderer extends LoadingRenderer {
         this.resetOriginals();
     }
 
-    private void initStrokeInset(float width, float height) {
-        float minSize = Math.min(width, height);
-        float strokeInset = minSize / 2.0f - this.mCenterRadius;
-        float minStrokeInset = (float) Math.ceil(this.mStrokeWidth / 2.0f);
-        this.mStrokeInset = Math.max(strokeInset, minStrokeInset);
-    }
-
     private void storeOriginals() {
         this.mOriginEndDegrees = this.mEndDegrees;
         this.mOriginStartDegrees = this.mEndDegrees;
@@ -215,7 +201,6 @@ public class LevelLoadingRenderer extends LoadingRenderer {
         this.mWidth = builder.mWidth > 0 ? builder.mWidth : this.mWidth;
         this.mHeight = builder.mHeight > 0 ? builder.mHeight : this.mHeight;
         this.mStrokeWidth = builder.mStrokeWidth > 0 ? builder.mStrokeWidth : this.mStrokeWidth;
-        this.mCenterRadius = builder.mCenterRadius > 0 ? builder.mCenterRadius : this.mCenterRadius;
 
         this.mDuration = builder.mDuration > 0 ? builder.mDuration : this.mDuration;
 
