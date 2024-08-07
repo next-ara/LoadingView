@@ -31,7 +31,7 @@ public class LoadingView extends View {
     //最大摆动角度
     public static final int MAX_SWING_ANGLE_DEFAULT = 180;
     //动画持续时间
-    public static final int DURATION_DEFAULT = 2000;
+    public static final int DURATION_DEFAULT = 1800;
 
     //圆环的宽度
     private float strokeWidth;
