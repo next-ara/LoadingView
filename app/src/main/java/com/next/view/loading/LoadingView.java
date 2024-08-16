@@ -12,6 +12,7 @@ import android.view.animation.LinearInterpolator;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.view.animation.PathInterpolatorCompat;
 
 /**
  * ClassName:加载控件类
@@ -167,7 +168,7 @@ public class LoadingView extends View {
      */
     private void initAnimator() {
         this.startAngleAnimator = ValueAnimator.ofInt(-90, 630);
-        this.startAngleAnimator.setInterpolator(new LinearInterpolator());
+        this.startAngleAnimator.setInterpolator(PathInterpolatorCompat.create(0.37f, 0.43f, 0.63f, 0.57f));
         this.startAngleAnimator.addUpdateListener(animation -> {
             this.startAngle = (int) animation.getAnimatedValue();
             invalidate();
