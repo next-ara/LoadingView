@@ -168,7 +168,7 @@ public class LoadingView extends View {
      */
     private void initAnimator() {
         this.startAngleAnimator = ValueAnimator.ofInt(-90, 630);
-        this.startAngleAnimator.setInterpolator(PathInterpolatorCompat.create(0.37f, 0.43f, 0.63f, 0.57f));
+        this.startAngleAnimator.setInterpolator(PathInterpolatorCompat.create(0.43f, 0.37f, 0.57f, 0.63f));
         this.startAngleAnimator.addUpdateListener(animation -> {
             this.startAngle = (int) animation.getAnimatedValue();
             invalidate();
