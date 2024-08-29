@@ -1,5 +1,7 @@
 package com.next.view.loading;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -10,7 +12,6 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.animation.PathInterpolatorCompat;
 
@@ -33,6 +34,14 @@ public class LoadingView extends View {
     public static final int MAX_SWING_ANGLE_DEFAULT = 180;
     //动画持续时间
     public static final int DURATION_DEFAULT = 1800;
+    //淡入动画持续时间
+    public static final int FADE_IN_DURATION_DEFAULT = 300;
+    //淡出动画持续时间
+    public static final int FADE_OUT_DURATION_DEFAULT = 150;
+    //放大动画持续时间
+    public static final int SCALE_DURATION_DEFAULT = 300;
+    //缩小动画持续时间
+    public static final int SHRINK_DURATION_DEFAULT = 150;
 
     //圆环的宽度
     private float strokeWidth;
@@ -52,11 +61,26 @@ public class LoadingView extends View {
     //摆动角度动画
     private ValueAnimator swingAngleAnimator;
 
+    //淡入动画
+    private ValueAnimator fadeInAnimator;
+
+    //淡出动画
+    private ValueAnimator fadeOutAnimator;
+
+    //放大动画
+    private ValueAnimator scaleAnimator;
+
+    //缩小动画
+    private ValueAnimator shrinkAnimator;
+
     //起始角度
     private int startAngle = 0;
 
     //摆动角度
     private int swingAngle = 0;
+
+    //是否正在加载
+    private boolean isLoading = false;
 
     public LoadingView(Context context) {
         super(context);
@@ -96,18 +120,30 @@ public class LoadingView extends View {
         canvas.drawArc(this.strokeWidth, this.strokeWidth, this.getWidth() - this.strokeWidth, this.getHeight() - this.strokeWidth, this.startAngle, this.swingAngle, false, this.foregroundPaint);
     }
 
-    @Override
-    protected void onVisibilityChanged(@NonNull View changedView, int visibility) {
-        super.onVisibilityChanged(changedView, visibility);
-
-        boolean visible = visibility == VISIBLE && this.getVisibility() == VISIBLE;
-        if (visible) {
-            //开始动画
-            this.startAnimation();
-        } else {
-            //停止动画
-            this.stopAnimation();
+    /**
+     * 开始加载
+     */
+    public void startLoading() {
+        if (this.isLoading) {
+            return;
         }
+
+        this.isLoading = true;
+        //启动动画
+        this.startAnimation();
+    }
+
+    /**
+     * 停止加载
+     */
+    public void stopLoading() {
+        if (!this.isLoading) {
+            return;
+        }
+
+        this.isLoading = false;
+        //停止动画
+        this.stopAnimation();
     }
 
     /**
@@ -141,6 +177,9 @@ public class LoadingView extends View {
             this.strokeWidth = STROKE_WIDTH_DEFAULT;
             this.loadingColor = LOADING_COLOR_DEFAULT;
         }
+
+        //初始透明度为0
+        this.setAlpha(0f);
     }
 
     /**
@@ -182,6 +221,46 @@ public class LoadingView extends View {
                 this.swingAngle = MAX_SWING_ANGLE_DEFAULT - this.swingAngle;
             }
         });
+
+        this.fadeInAnimator = ValueAnimator.ofFloat(0f, 1f);
+        this.fadeInAnimator.setInterpolator(PathInterpolatorCompat.create(0f, 0f, 0f, 1f));
+        this.fadeInAnimator.addUpdateListener(animation -> {
+            this.setAlpha((Float) animation.getAnimatedValue());
+        });
+
+        this.fadeOutAnimator = ValueAnimator.ofFloat(1f, 0f);
+        this.fadeOutAnimator.setInterpolator(PathInterpolatorCompat.create(0f, 0f, 1f, 0f));
+        this.fadeOutAnimator.addUpdateListener(animation -> {
+            this.setAlpha((Float) animation.getAnimatedValue());
+        });
+
+        this.scaleAnimator = ValueAnimator.ofFloat(0.8f, 1f);
+        this.scaleAnimator.setInterpolator(PathInterpolatorCompat.create(0f, 0f, 0f, 1f));
+        this.scaleAnimator.addUpdateListener(animation -> {
+            this.setScaleX((Float) animation.getAnimatedValue());
+            this.setScaleY((Float) animation.getAnimatedValue());
+        });
+
+        this.shrinkAnimator = ValueAnimator.ofFloat(1f, 0.8f);
+        this.shrinkAnimator.setInterpolator(PathInterpolatorCompat.create(0f, 0f, 1f, 0f));
+        this.shrinkAnimator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+
+                LoadingView.this.startAngleAnimator.setRepeatCount(0);
+                LoadingView.this.startAngleAnimator.setDuration(0);
+                LoadingView.this.startAngleAnimator.end();
+
+                LoadingView.this.swingAngleAnimator.setRepeatCount(0);
+                LoadingView.this.swingAngleAnimator.setDuration(0);
+                LoadingView.this.swingAngleAnimator.end();
+            }
+        });
+        this.shrinkAnimator.addUpdateListener(animation -> {
+            this.setScaleX((Float) animation.getAnimatedValue());
+            this.setScaleY((Float) animation.getAnimatedValue());
+        });
     }
 
     /**
@@ -195,18 +274,22 @@ public class LoadingView extends View {
         this.swingAngleAnimator.setRepeatCount(ValueAnimator.INFINITE);
         this.swingAngleAnimator.setDuration(DURATION_DEFAULT);
         this.swingAngleAnimator.start();
+
+        this.fadeInAnimator.setDuration(FADE_IN_DURATION_DEFAULT);
+        this.fadeInAnimator.start();
+
+        this.scaleAnimator.setDuration(SCALE_DURATION_DEFAULT);
+        this.scaleAnimator.start();
     }
 
     /**
      * 停止动画
      */
     private void stopAnimation() {
-        this.startAngleAnimator.setRepeatCount(0);
-        this.startAngleAnimator.setDuration(0);
-        this.startAngleAnimator.end();
+        this.fadeOutAnimator.setDuration(FADE_OUT_DURATION_DEFAULT);
+        this.fadeOutAnimator.start();
 
-        this.swingAngleAnimator.setRepeatCount(0);
-        this.swingAngleAnimator.setDuration(0);
-        this.swingAngleAnimator.end();
+        this.shrinkAnimator.setDuration(SHRINK_DURATION_DEFAULT);
+        this.shrinkAnimator.start();
     }
 }
